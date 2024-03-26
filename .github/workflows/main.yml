@@ -1,8 +1,33 @@
-            - name: Swagger Codegen
-  # You may pin to the exact commit or the version.
-  # uses: bjerkio/swagger-codegen-action@22db9a73c06c0523d341a4a32e4e15facd0d34e4
-  uses: bjerkio/swagger-codegen-action@v1
-  with:
-    # Arguments
-    args: 
+name: Generate Code from Swagger
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate_code:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        
+      - name: Install Swagger Codegen
+        run: |
+          wget https://repo1.maven.org/maven2/io/swagger/codegen/v3/swagger-codegen-cli/3.0.27/swagger-codegen-cli-3.0.27.jar -O swagger-codegen-cli.jar
+          java -jar swagger-codegen-cli.jar help  # Esempio di comando per mostrare l'help di Swagger Codegen
           
+      - name: Generate Code
+        run: |
+          java -jar swagger-codegen-cli.jar generate -i petstore1.yaml -l java -o /generated_code
+          # Sostituisci {linguaggio} con il linguaggio di programmazione desiderato (ad esempio, java, python, ecc.)
+          # Assicurati di sostituire anche i percorsi con i percorsi effettivi del tuo file Swagger e della cartella di output
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.email "github-actions@example.com"
+          git config --global user.name "GitHub Actions"
+          git add .
+          git commit -m "Generated code from Swagger"
+          git push
