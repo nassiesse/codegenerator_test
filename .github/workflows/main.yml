@@ -26,8 +26,8 @@ jobs:
 
       - name: Commit and Push Changes
         run: |
-          git config --global user.email "github-actions@example.com"
-          git config --global user.name "GitHub Actions"
+          git config --global user.email "stefano.nassi@gmail.com"
+          git config --global user.name "nassiesse"
           git add .
           git commit -m "Generated code from Swagger"
           git push
