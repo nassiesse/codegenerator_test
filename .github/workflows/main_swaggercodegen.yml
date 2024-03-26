@@ -3,7 +3,7 @@ name: Generate Code from Swagger (Swagger codegen)
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   generate_code:
