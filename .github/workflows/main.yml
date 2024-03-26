@@ -29,7 +29,7 @@ jobs:
           
       - name: Generate Code
         run: |
-          java -jar swagger-codegen-cli.jar generate -i openapi-spec.yaml -l spring --skip-implementation
+          java -jar swagger-codegen-cli.jar generate -i openapi-spec.yaml -l spring --additional-properties interfaceOnly=true
           # Sostituisci {linguaggio} con il linguaggio di programmazione desiderato (ad esempio, java, python, ecc.)
           # Assicurati di sostituire anche i percorsi con i percorsi effettivi del tuo file Swagger e della cartella di output
 
