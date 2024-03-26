@@ -1,0 +1,8 @@
+            - name: Swagger Codegen
+  # You may pin to the exact commit or the version.
+  # uses: bjerkio/swagger-codegen-action@22db9a73c06c0523d341a4a32e4e15facd0d34e4
+  uses: bjerkio/swagger-codegen-action@v1
+  with:
+    # Arguments
+    args: 
+          
