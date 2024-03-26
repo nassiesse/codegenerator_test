@@ -13,7 +13,7 @@ import javax.validation.constraints.*;
  */
 @Schema(description = "Process Repr")
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2024-03-26T18:21:54.895046Z[Etc/UTC]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2024-03-26T18:23:40.844777Z[Etc/UTC]")
 
 
 public class ProcessRepr   {
