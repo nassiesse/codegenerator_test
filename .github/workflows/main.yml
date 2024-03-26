@@ -30,7 +30,8 @@ jobs:
           git config --global user.name "nassiesse"
           git add .
           git commit -m "Generated code from Swagger"
-          git remote add origin_with_token https://${{ secrets.TEST_TOKEN }}@github.com/nassiesse/codegenerator_test.git
+          git remote add origin_with_token https://$token@github.com/nassiesse/codegenerator_test.git
           git push origin_with_token
-
+        env: # Or as an environment variable
+          token: ${{ secrets.TEST_TOKEN }}
           
