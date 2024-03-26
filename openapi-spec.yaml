@@ -1,0 +1,380 @@
+---
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:54875
+  description: Generated server url
+paths:
+  /bpm-layer/process:
+    post:
+      tags:
+      - bpm-layer-resource-controller
+      summary: Operation to create a new process instance.
+      operationId: createProcess
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProcessReq'
+        required: true
+      responses:
+        "401":
+          description: UnauthorizedError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseError'
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProcessRepr'
+        "403":
+          description: ForbiddenError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseError'
+        "429":
+          description: TooManyRequestsError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseError'
+        "404":
+          description: NotFoundError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseError'
+        "500":
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseError'
+        "400":
+          description: BadRequestError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /bpm-layer/task/{taskId}/unassign:
+    patch:
+      tags:
+      - bpm-layer-resource-controller
+      summary: Revoke the user assigned to a task
+      operationId: unclaimUserTask
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "429":
+          description: TooManyRequestsError
+        "200":
+          description: Updated
+        "404":
+          description: NotFoundError
+        "403":
+          description: ForbiddenError
+        "400":
+          description: BadRequestError
+        "401":
+          description: UnauthorizedError
+        "500":
+          description: InternalServerError
+  /bpm-layer/task/{taskId}/complete:
+    patch:
+      tags:
+      - bpm-layer-resource-controller
+      summary: Complete the user task.
+      operationId: completeUserTask
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteUserTaskReq'
+        required: true
+      responses:
+        "429":
+          description: TooManyRequestsError
+        "200":
+          description: Updated
+        "404":
+          description: NotFoundError
+        "403":
+          description: ForbiddenError
+        "400":
+          description: BadRequestError
+        "401":
+          description: UnauthorizedError
+        "500":
+          description: InternalServerError
+  /bpm-layer/task/{taskId}/assign:
+    patch:
+      tags:
+      - bpm-layer-resource-controller
+      summary: Assign the task to a user.
+      operationId: claimUserTask
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "429":
+          description: TooManyRequestsError
+        "200":
+          description: Updated
+        "404":
+          description: NotFoundError
+        "403":
+          description: ForbiddenError
+        "400":
+          description: BadRequestError
+        "401":
+          description: UnauthorizedError
+        "500":
+          description: InternalServerError
+  /bpm-layer/test:
+    get:
+      tags:
+      - bpm-layer-resource-controller
+      operationId: getTest
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /bpm-layer/process/{processInstanceKey}:
+    get:
+      tags:
+      - bpm-layer-resource-controller
+      summary: Retrieves the process information
+      operationId: retrieveProcess
+      parameters:
+      - name: processInstanceKey
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "401":
+          description: UnauthorizedError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseError'
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessRepr'
+        "403":
+          description: ForbiddenError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseError'
+        "429":
+          description: TooManyRequestsError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseError'
+        "404":
+          description: NotFoundError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseError'
+        "500":
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseError'
+        "400":
+          description: BadRequestError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    delete:
+      tags:
+      - bpm-layer-resource-controller
+      summary: Abort the process execution.
+      operationId: deleteProcess
+      parameters:
+      - name: processInstanceKey
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "429":
+          description: TooManyRequestsError
+        "404":
+          description: NotFoundError
+        "403":
+          description: ForbiddenError
+        "204":
+          description: Success
+        "400":
+          description: BadRequestError
+        "401":
+          description: UnauthorizedError
+        "500":
+          description: InternalServerError
+components:
+  schemas:
+    CreateProcessReq:
+      required:
+      - bpmnProcessId
+      - variables
+      type: object
+      properties:
+        bpmnProcessId:
+          type: string
+          description: BPMN process identifier.
+          example: string
+        version:
+          type: integer
+          description: Version of the BPMN process.
+          format: int32
+          example: 0
+        variables:
+          type: array
+          properties:
+            empty:
+              type: boolean
+          description: List of variables associated with the process.
+          items:
+            $ref: '#/components/schemas/VariableReq'
+      description: Create Process Req
+    VariableReq:
+      required:
+      - name
+      - value
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the variable.
+          example: string
+        value:
+          type: string
+          description: Value of the variable.
+          example: string
+      description: Process Variable
+    BaseError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        message:
+          type: string
+          description: Error message
+          example: Error Message
+      description: Represents the generic error response to the client.
+    CreateProcessRepr:
+      required:
+      - processInstanceKey
+      type: object
+      properties:
+        processInstanceKey:
+          type: integer
+          description: Process Instance Identifier.
+          format: int64
+      description: Create Process Repr
+    ValidationError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        message:
+          type: string
+          description: Error message
+          example: Error Message
+        errors:
+          type: array
+          description: List of validation errors
+          items:
+            $ref: '#/components/schemas/ValidationRepr'
+      description: Represents response to client for request validation errors.
+    ValidationRepr:
+      type: object
+      properties:
+        fieldName:
+          type: string
+          description: Field name
+          example: string
+        fieldValue:
+          type: string
+          description: Field value
+          example: string
+        errorDescription:
+          type: string
+          description: Error description
+          example: string
+      description: Represents response to client for request validation errors.
+    CompleteUserTaskReq:
+      required:
+      - variables
+      type: object
+      properties:
+        variables:
+          type: array
+          properties:
+            empty:
+              type: boolean
+          description: List of variables associated with the process.
+          items:
+            $ref: '#/components/schemas/VariableReq'
+      description: Complete User Task Req
+    ProcessRepr:
+      required:
+      - endDate
+      - processInstanceKey
+      - startDate
+      - state
+      type: object
+      properties:
+        processInstanceKey:
+          type: integer
+          description: Process Instance Key.
+          format: int32
+          example: 0
+        startDate:
+          type: string
+          description: Start date of the process instance.
+          example: 2023-10-12T08:38:44.041Z
+        endDate:
+          type: string
+          description: End date of the process instance.
+          example: 2023-10-12T08:38:44.041Z
+        state:
+          type: string
+          description: State of the process instance.
+          example: ACTIVE
+      description: Process Repr
