@@ -1,4 +1,4 @@
-name: Generate Code from Swagger
+name: Generate Code from Swagger using OpenAPI
 
 on:
   push:
@@ -22,17 +22,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
         
-      - name: Install Swagger Codegen
+      - name: Install OpenAPI Generator
         run: |
-          wget https://repo1.maven.org/maven2/io/swagger/codegen/v3/swagger-codegen-cli/3.0.27/swagger-codegen-cli-3.0.27.jar -O swagger-codegen-cli.jar
-          java -jar swagger-codegen-cli.jar help  # Esempio di comando per mostrare l'help di Swagger Codegen
+          wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/5.3.0/openapi-generator-cli-5.3.0.jar -O openapi-generator-cli.jar
+          echo 'java -jar openapi-generator-cli.jar $@' > openapi-generator
+          chmod +x openapi-generator
+          sudo mv openapi-generator /usr/local/bin/
           
       - name: Generate Code
         run: |
-          java -jar swagger-codegen-cli.jar generate -i openapi-spec.yaml -l spring --additional-properties interfaceOnly=true,withXml=true
-          # Sostituisci {linguaggio} con il linguaggio di programmazione desiderato (ad esempio, java, python, ecc.)
-          # Assicurati di sostituire anche i percorsi con i percorsi effettivi del tuo file Swagger e della cartella di output
-
+          openapi-generator generate -i openapi-spec.yaml -g spring --additional-properties interfaceOnly=true
+          
       - name: Commit and Push Changes
         run: |
           git config --global user.email "stefano.nassi@gmail.com"
