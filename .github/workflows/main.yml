@@ -1,10 +1,7 @@
 name: Generate Code from Swagger using OpenAPI
-
-on:
-  push:
-    branches:
-      - main
-
+on: 
+  workflow_dispatch:
+  
 jobs:
   generate_code:
     runs-on: ubuntu-latest

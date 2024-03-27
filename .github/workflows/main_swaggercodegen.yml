@@ -1,9 +1,7 @@
 name: Generate Code from Swagger (Swagger codegen)
 
-on:
-  push:
-    branches:
-      - dev
+on: 
+  workflow_dispatch:
 
 jobs:
   generate_code:

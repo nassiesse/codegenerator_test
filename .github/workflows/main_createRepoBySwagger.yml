@@ -1,0 +1,91 @@
+name: Create Repo by swagger
+on: 
+  workflow_dispatch:
+
+
+jobs:
+  get_repo_name:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+      issues: write
+      repository-projects: write
+      deployments: write
+      packages: write
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        
+      - name: read-yaml-file
+        uses: pietrobolcato/action-read-yaml@1.0.0
+        id: read_action_js
+        with:
+          config: ${{ github.workspace }}/bpmlayer-api.yaml
+
+      - name: use-swagger-file
+        run: |
+          echo repo_name name: ${{ steps.read_action_js.outputs['info.title'] }}
+    outputs:
+      repo_name: ${{ steps.read_action_js.outputs['info.title'] }}
+          
+  create-repository:
+    needs: [get_repo_name]
+    runs-on: ubuntu-latest
+    name: Creating Organization Repository
+    steps:
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+
+      - name: Creating GitHub Organization Repository
+        uses: repo-ctrl/create-repo-action@main 
+        id: create-repo
+        with:
+          repo-name: '${{needs.get_repo_name.outputs.repo_name}}'
+          org-admin-token: '${{ secrets.ORG_ADMIN_TOKEN }}'
+
+      - name: Log URL to the repo
+        run: echo "The new repo is ${{ steps.create-repo.outputs.repo-url }}"
+    outputs:
+      repo_url: ${{ steps.create-repo.outputs.repo-url }}
+
+  generate_code:
+    needs: [create-repository]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      pull-requests: write
+      issues: write
+      repository-projects: write
+      deployments: write
+      packages: write
+      
+    
+    steps:
+      - name: Checkout API Repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{needs.create-repository.outputs.repo_url}}
+                  
+      - name: Install OpenAPI Generator
+        run: |
+          wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.4.0/openapi-generator-cli-7.4.0.jar -O openapi-generator-cli.jar
+          echo 'java -jar openapi-generator-cli.jar $@' > openapi-generator
+          chmod +x openapi-generator
+          sudo mv openapi-generator /usr/local/bin/
+          
+      - name: Generate Code
+        run: |
+          openapi-generator generate -i openapi-spec.yaml -g spring --additional-properties interfaceOnly=true
+          
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.email "stefano.nassi@gmail.com"
+          git config --global user.name "nassiesse"
+          git add .
+          git commit -m "Generated code from Swagger"
+          git push ${{needs.create-repository.outputs.repo_url}}
+
