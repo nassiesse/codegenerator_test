@@ -24,8 +24,8 @@ jobs:
         uses: actions-tools/yaml-outputs@v2
         with:
           file-path: ${{ github.workspace }}/bpmlayer-api.yaml          # File to read from
-          run: |
-            echo "${{ steps.yaml.outputs.info__title }}"
+      - run: |
+          echo "${{ steps.yaml.outputs.info__title }}"
     outputs:
       repo_name: ${{ steps.yaml.outputs.info__title }}
           
